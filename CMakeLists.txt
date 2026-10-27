@@ -79,6 +79,14 @@ add_executable(gimbal
     ${SRC}/driver/pwm.c
     ${SRC}/driver/adc.c
     ${SRC}/driver/timebase.c
+    # 算法层与控制层：目前 main.c 还没调用它们，会被 --gc-sections 整体丢掉。
+    # 仍然列进来，是为了让它们始终以 ARM 目标 + -Wdouble-promotion 编译一次 ——
+    # 只在 host 上编过的代码，到板子上才发现用了 double 就晚了。
+    ${SRC}/common/math_utils.c
+    ${SRC}/algorithm/filter.c
+    ${SRC}/algorithm/hall.c
+    ${SRC}/algorithm/svpwm.c
+    ${SRC}/control/pid.c
 )
 
 target_include_directories(gimbal PRIVATE
