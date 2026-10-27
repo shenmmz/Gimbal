@@ -1,0 +1,10 @@
+{
+  "cmake.useCMakePresets": "always",
+  "cmake.configureOnOpen": false,
+  "files.encoding": "utf8",
+  "files.associations": {
+    "*.h": "c",
+    "*.ld": "ld"
+  },
+  "C_Cpp.default.cStandard": "c11"
+}

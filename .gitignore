@@ -1,0 +1,17 @@
+# 构建产物
+build/
+*.map
+*.elf
+*.bin
+*.hex
+*.o
+*.obj
+*.a
+
+# AI 助手工作区（会话状态、临时渲染图，不属于工程本身）
+.workbuddy-ai/
+
+# 编辑器 / 系统
+.vs/
+.DS_Store
+Thumbs.db

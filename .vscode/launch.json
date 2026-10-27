@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "调试 gimbal（ST-Link + OpenOCD）",
+      "type": "cortex-debug",
+      "request": "launch",
+      "servertype": "openocd",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/arm/gimbal.elf",
+      "openocdPath": "${env:USERPROFILE}/tools/openocd/bin/openocd.exe",
+      "device": "STM32F405RG",
+      "configFiles": [
+        "interface/stlink.cfg",
+        "target/stm32f4x.cfg"
+      ],
+      "runToEntryPoint": "main",
+      "preLaunchTask": "build arm"
+    }
+  ]
+}

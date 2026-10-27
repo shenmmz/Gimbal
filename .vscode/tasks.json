@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build arm",
+      "type": "shell",
+      "command": "cmake --build --preset arm",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "build host tests",
+      "type": "shell",
+      "command": "cmake --build --preset host",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "flash",
+      "type": "shell",
+      "command": "${env:USERPROFILE}\\tools\\openocd\\bin\\openocd.exe",
+      "args": [
+        "-f", "interface/stlink.cfg",
+        "-c", "transport select swd",
+        "-f", "target/stm32f4x.cfg",
+        "-c", "program build/arm/gimbal.elf verify reset exit"
+      ],
+      "dependsOn": ["build arm"],
+      "problemMatcher": []
+    },
+    {
+      "label": "openocd link test",
+      "detail": "只建 SWD 链路不烧录，用来判断问题出在接线还是镜像",
+      "type": "shell",
+      "command": "${env:USERPROFILE}\\tools\\openocd\\bin\\openocd.exe",
+      "args": [
+        "-f", "interface/stlink.cfg",
+        "-c", "transport select swd",
+        "-f", "target/stm32f4x.cfg"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
