@@ -61,7 +61,7 @@ target_include_directories(stm32_hal PUBLIC
     ${VENDOR}/cmsis/core
     ${VENDOR}/cmsis/device/inc
     ${VENDOR}/hal/inc
-    ${SRC}/common          # hal_conf.h（HAL 通过 shim 找到它）
+    ${SRC}/common          # stm32f4xx_hal_conf.h（HAL 在 stm32f4xx_hal.h:29 硬编码此名）
 )
 
 # stm32/ 里的官方代码不参与 -Werror，只给最小必要宏

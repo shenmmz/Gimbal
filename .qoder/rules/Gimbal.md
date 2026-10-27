@@ -54,7 +54,7 @@ STM32F405 三轴无刷相机云台固件：**电压模式 FOC + 线性霍尔测�
   - `control`：pid / axis / gimbal / feedforward（8 kHz）
   - `algorithm`：hall / svpwm / imu / filter / calibration（8 kHz，纯数学，不含 HAL）
   - `driver`：pwm / adc / spi / uart / gpio / nvm / timebase（中断驱动，无业务判断）
-  - `common`：board.h / config.h / types.h / hal_conf.h / math_utils / ring_buffer
+  - `common`：board.h / config.h / types.h / stm32f4xx_hal_conf.h / math_utils / ring_buffer
 - **三个频率层**：8 kHz 控制环（125 µs，ADC 中断）→ 1 kHz `protect.c`（判据/置 LATCH）→ 100 Hz `fsm.c`（迁移/nSLEEP/日志，10 ms 一拍）；IMU 采样 1 kHz（轮询，时基由定时器决定）
 - PWM 载波 24 kHz（TIM1 主，ARR=6999，PSC=0），TIM1 RCR=2 使 TRGO 每 3 周期输出一次 → 8 kHz 硬件触发 ADC
 - IWDG 看门狗；毫秒用 `timebase_ms()`，微秒用 `timebase_us()`

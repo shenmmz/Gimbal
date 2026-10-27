@@ -35,10 +35,9 @@ src/
 │   ├── ★ board.h        引脚映射与硬件常量（单一事实来源）
 │   ├── ★ config.h       编译期开关、频率配置
 │   ├── ★ types.h        公共类型、枚举
-│   ├── ★ hal_conf.h     裁剪 STM32 HAL 模块
+│   ├── ★ stm32f4xx_hal_conf.h  裁剪 STM32 HAL 模块（HAL 硬编码此名，改不得）
 │   ├── ★ error.h        错误码与 ASSERT 宏
-│   ├── ★ stm32f4xx_hal_conf.h  ← HAL 源码找的就是这个名字，只转发到 hal_conf.h
-│   ├── math_utils.c/.h  sin/cos 查表、atan2、限幅
+│   ├── math_utils.c/.h  角度折返、最短角差、限幅
 │   └── ring_buffer.c/.h 环形缓冲
 └── tests/               PC 端单元测试（只测 control/ 和 algorithm/）
     ├── ★ CMakeLists.txt

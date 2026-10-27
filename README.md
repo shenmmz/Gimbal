@@ -148,8 +148,7 @@ Gimbal/
 │   │   └── timebase.c / timebase.h  # 时间基准（SysTick、定时器）[待创建]
 │   ├── common/               # 公共头文件
 │   │   ├── board.h           # 引脚配置（64 个引脚的唯一事实来源）
-│   │   ├── hal_conf.h        # HAL 库配置（外设使能、时钟配置）
-│   │   └── stm32f4xx_hal_conf.h  # HAL 库配置文件
+│   │   └── stm32f4xx_hal_conf.h  # HAL 配置（文件名被 HAL 硬编码，不能改）
 │   └── tests/                # PC 端单元测试
 │       ├── CMakeLists.txt    # 测试构建配置
 │       └── test_smoke.c      # 冒烟测试（基础功能验证）
@@ -244,8 +243,8 @@ ST 官方 HAL 与 ARM CMSIS 原件，**禁止修改**（要改就改 `src/` 下�
 #### src/common/
 公共头文件，全局配置：
 - **board.h**：引脚配置宏定义（64 个引脚的分配，是唯一事实来源）
-- **hal_conf.h**：HAL 库配置（外设使能、时钟树配置）
-- **stm32f4xx_hal_conf.h**：HAL 库模块使能配置
+- **stm32f4xx_hal_conf.h**：HAL 配置（模块使能、晶振、断言）。
+  文件名被 `stm32f4xx_hal.h:29` 硬编码，**不能按项目约定改名**，理由见架构文档 §5
 
 #### src/tests/
 PC 端单元测试，用于算法验证：
