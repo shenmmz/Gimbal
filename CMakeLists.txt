@@ -106,5 +106,6 @@ add_custom_command(TARGET gimbal POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:gimbal> $<TARGET_FILE_DIR:gimbal>/gimbal.bin
     COMMAND ${CMAKE_OBJCOPY} -O ihex   $<TARGET_FILE:gimbal> $<TARGET_FILE_DIR:gimbal>/gimbal.hex
     COMMAND ${CMAKE_SIZE} $<TARGET_FILE:gimbal>
-    COMMENT "生成 gimbal.bin / gimbal.hex 并打印尺寸"
+    # ninja 会把 COMMENT 原样按 UTF-8 字节回显，中文在 GBK 控制台必乱码，这里只用 ASCII
+    COMMENT "objcopy -> gimbal.bin / gimbal.hex, then print size"
 )
