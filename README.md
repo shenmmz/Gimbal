@@ -197,10 +197,16 @@ Gimbal/
 ### 目录说明
 
 #### stm32/
-ST 官方 HAL 库和 CMSIS 框架，从 STM32CubeF4 仓库原样引入，**禁止修改**。包含：
-- `Drivers/STM32F4xx_HAL_Driver/` - STM32F4 HAL 驱动库
-- `Drivers/CMSIS/` - CMSIS 核心文件和设备支持
-- `Middlewares/` - 中间件（本项目未使用）
+ST 官方 HAL 与 ARM CMSIS 原件，**禁止修改**（要改就改 `src/` 下的封装）。版本与来源见 `stm32/VERSION.md`：
+
+| 目录 | 内容 | 来源 |
+|---|---|---|
+| `cmsis/core/` | CMSIS-Core 6.4.0 头文件（只留 M-profile） | ARM-software/CMSIS_6 v6.4.0 |
+| `cmsis/device/` | STM32F4 设备头 + 启动文件 + `system_stm32f4xx.c` | cmsis_device_f4 master |
+| `hal/` | STM32F4 HAL 1.8.5（20 个模块，未用到的已删） | stm32f4xx_hal_driver master |
+
+> 这里只放编译要用的东西：没有 `Middlewares/`，没有 `Drivers/` 中间层，HAL 只保留
+> 实际参与编译的 20 个 `.c`（上游 94 个）。删掉的文件随时可从上游补回。
 
 #### src/app/
 应用层代码，负责：
