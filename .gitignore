@@ -25,6 +25,18 @@ external/*
 # CMake 用户本地预设
 CMakeUserPresets.json
 
+# Keil / µVision：本项目不用它构建（工具链是 arm-none-eabi-gcc + CMake）。
+# 误开 µVision 会生成下面这些文件，混进仓库会让人以为存在 Keil 工程。
+# 2026-10-27 就发生过一次：DebugConfig/Target_1_STM32F405RGTx.dbgconf 被带进提交。
+*.uvprojx
+*.uvproj
+*.uvoptx
+*.uvopt
+*.uvguix.*
+*.dbgconf
+*.sct
+DebugConfig/
+
 # 编辑器 / 系统
 .vs/
 .DS_Store
