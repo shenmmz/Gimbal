@@ -82,3 +82,30 @@ cmake --build build/arm && ./build/host/src/tests/test_smoke.exe
 | 固件能链接 | `cmake --build build/arm` | 无 error；`FLASH` 占用变化 < 1 KB 属正常（头文件内联改动） |
 | 主机测试能过 | `./build/host/src/tests/test_smoke.exe` | `smoke ok` |
 | PWM 能出波 | 上板后用示波器看 PB8/PB7/PB6 | 24 kHz、三相占空比互补、死区正常（`hal_tim.c` 的 `CCxNE` 修复就是保这个） |
+
+## 6. 来源与许可证
+
+三份代码都来自厂商**自己的 GitHub 组织**，不是第三方镜像。ST 的发布方式就是"每个模块一个仓库"
+（`cmsis_device_f4` 的 README 原话：*each STM32Cube software module ... is delivered as an individual repository*），
+STM32CubeF4 主仓库只用 submodule 引用它们，并不存代码：
+
+```
+STM32CubeF4 v1.28.3 / .gitmodules
+    path = Drivers/STM32F4xx_HAL_Driver
+    url  = https://github.com/STMicroelectronics/stm32f4xx_hal_driver.git
+    path = Drivers/CMSIS/Device/ST/STM32F4xx
+    url  = https://github.com/STMicroelectronics/cmsis_device_f4.git
+```
+
+| 目录 | 来源 | 组织认证 | 许可证 |
+|---|---|---|---|
+| `hal/` | `STMicroelectronics/stm32f4xx_hal_driver` | GitHub 官方认证（`is_verified: true`，官网 st.com） | BSD-3-Clause（`hal/LICENSE.md`，ST 原文） |
+| `cmsis/device/` | `STMicroelectronics/cmsis_device_f4` | 同上 | Apache-2.0（`cmsis/device/LICENSE.md`） |
+| `cmsis/core/` | `ARM-software/CMSIS_6` | Arm 官方组织（blog: arm.com，无 GitHub 认证徽章） | Apache-2.0（`cmsis/LICENSE.md`） |
+
+> `cmsis/core/` 是唯一**不属于 ST** 的部分：Cortex-M 内核头文件由 Arm 维护，ST 也是从 Arm 取的。
+> 注意 ST 的 CubeF4 里自带的是 CMSIS **5.6.0**，本项目用的是 Arm 官方 **6.4.0**（更新），
+> 这是刻意选择：编译产物与 6.1.0 时逐字节相同，见第 5 节验证。
+>
+> 许可证文件必须跟着代码走：`stm32/cmsis/device/` 原来缺 `LICENSE.md`（而它的每个头文件都写着
+> "terms that can be found in the LICENSE file in the root directory"），2026-10-27 已补齐。
