@@ -9,7 +9,21 @@ build/
 *.a
 
 # AI 助手工作区（会话状态、临时渲染图，不属于工程本身）
+.workbuddy/
 .workbuddy-ai/
+.zcode/
+.opencode/
+
+# 设计文档：仅本地维护，不上云
+docs/
+
+# 硬件资料：第三方 PDF / 图片体积大且可再获取，不入库
+# 清单与下载来源见 external/README.md（本目录唯一入库的文件）
+external/*
+!external/README.md
+
+# CMake 用户本地预设
+CMakeUserPresets.json
 
 # 编辑器 / 系统
 .vs/
