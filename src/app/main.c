@@ -41,9 +41,9 @@ static void clock_init(void)
 
 int main(void)
 {
-    HAL_Init();
-    clock_init();
-    uart_init();
+    HAL_Init();         // 初始化 HAL 库
+    clock_init();       // 初始化时钟
+    uart_init();        // 初始化串口
 
     printf("\r\n=== Gimbal / IUO112 / STM32F405RGT6 ===\r\n");
     printf("SYSCLK %lu  HCLK %lu  PCLK1 %lu  PCLK2 %lu  (Hz)\r\n",
