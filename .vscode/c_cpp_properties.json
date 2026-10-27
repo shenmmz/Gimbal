@@ -1,0 +1,50 @@
+{
+  // C/C++ 扩展（ms-vscode.cpptools）的配置。
+  // 缺了本文件，Ctrl+左键点 #include "xxx.h" 就无法跳转 ——
+  // 扩展只认这里的 includePath，不会自动去读 build/ 下的编译数据库。
+  "version": 4,
+  "configurations": [
+    {
+      "name": "STM32F405",
+
+      // 交叉编译器：用来问出 newlib 系统头（stdint.h / stddef.h / math.h）的路径。
+      // 编译数据库里没有 -isystem，所以这一项不能省。
+      "compilerPath": "${env:USERPROFILE}/tools/arm-gnu-toolchain/bin/arm-none-eabi-gcc.exe",
+
+      // 由 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON 生成，含每个文件的真实 -I / -D / -mcpu。
+      // 注意：此文件里列出的源文件以它为准，下面的 includePath 仅作为兜底。
+      "compileCommands": "${workspaceFolder}/build/arm/compile_commands.json",
+
+      // 兜底路径：给编译数据库里没有的文件用（比如 src/tests/*.c 只进 host 构建）。
+      "includePath": [
+        "${workspaceFolder}/src/app",
+        "${workspaceFolder}/src/driver",
+        "${workspaceFolder}/src/common",
+        "${workspaceFolder}/src/control",
+        "${workspaceFolder}/src/algorithm",
+        "${workspaceFolder}/src/tests",
+        "${workspaceFolder}/stm32/cmsis/core",
+        "${workspaceFolder}/stm32/cmsis/device/inc",
+        "${workspaceFolder}/stm32/hal/inc"
+      ],
+
+      "defines": ["STM32F405xx", "USE_HAL_DRIVER"],
+
+      // 与 CMakeLists.txt 的 -std=gnu11 保持一致
+      "cStandard": "gnu11",
+      "cppStandard": "gnu++17",
+      "intelliSenseMode": "gcc-arm",
+
+      // 供 Ctrl+T 全工作区符号搜索用；不配则只能搜到已打开的文件
+      "browse": {
+        "path": [
+          "${workspaceFolder}/src",
+          "${workspaceFolder}/stm32/hal/inc",
+          "${workspaceFolder}/stm32/hal/src",
+          "${workspaceFolder}/stm32/cmsis"
+        ],
+        "limitSymbolsToIncludedHeaders": true
+      }
+    }
+  ]
+}
