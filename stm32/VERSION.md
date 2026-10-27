@@ -109,3 +109,82 @@ STM32CubeF4 v1.28.3 / .gitmodules
 >
 > 许可证文件必须跟着代码走：`stm32/cmsis/device/` 原来缺 `LICENSE.md`（而它的每个头文件都写着
 > "terms that can be found in the LICENSE file in the root directory"），2026-10-27 已补齐。
+
+## 7. 怎么自己核对这份库是官方的
+
+不用信本文档的结论，下面每一条都能自己跑。命令在 Git Bash 里执行（VS Code 终端切到 Git Bash）。
+
+### 7.1 先确认是 F4，不是 F1
+
+```bash
+ls stm32/cmsis/device/inc/        # 只有 stm32f405xx.h / stm32f4xx.h / system_stm32f4xx.h
+ls stm32/cmsis/device/startup/    # 只有 startup_stm32f405xx.s
+ls stm32/hal/src/ | head          # 全是 stm32f4xx_hal_*.c
+grep -ril "STM32F1" stm32/        # 只有 1 个文件命中，原因见 7.4
+```
+
+### 7.2 看版权头
+
+每个文件的头部都有 ST 的版权声明，`@author` 是 `MCD Application Team`（ST 的官方固件团队）：
+
+```bash
+sed -n '3,9p' stm32/hal/src/stm32f4xx_hal.c
+#   * @file    stm32f4xx_hal.c
+#   * @author  MCD Application Team
+#   * @brief   HAL module driver.
+#   ...
+#   * Copyright (c) 2017 STMicroelectronics.
+```
+
+### 7.3 看版本宏（比文件名可信）
+
+```bash
+grep "__STM32F4xx_HAL_VERSION_" stm32/hal/src/stm32f4xx_hal.c
+#   MAIN 0x01 / SUB1 0x08 / SUB2 0x05  →  HAL 1.8.5
+
+grep -m1 "CMSIS version number" stm32/cmsis/device/inc/stm32f4xx.h
+#   CMSIS version number V2.6.11       →  设备头 2.6.11
+```
+
+### 7.4 唯一出现 "F1" 的文件是正常的
+
+`stm32/hal/inc/Legacy/stm32_hal_legacy.h` 里有 14 处 `STM32F1` 字样，全部长这样：
+
+```c
+#if defined(STM32F1)
+  ...旧的宏别名...
+#endif
+```
+
+这是 ST 官方给**所有** F 系列共用的兼容层（同一文件里还有 F0/F2/F3/F7/H7/L4/G0/WB）。
+本工程编译时定义的是 `STM32F405xx`，这些分支整段被预处理器跳过，不会进二进制。
+`stm32f4xx_hal_def.h:30` 会 include 它，删掉会编译失败 —— 它是 F4 HAL 的一部分，不是别的芯片的东西。
+
+### 7.5 核对提交号
+
+本文档第 1 节的三个提交号，在 GitHub 上可以直接搜到：
+
+```
+https://github.com/STMicroelectronics/stm32f4xx_hal_driver/commit/1f6451c3e07728b4c830744de380e56bf5bc0026
+https://github.com/STMicroelectronics/cmsis_device_f4/commit/9192c7b9df75a142f2027ab266601fe061fc00b3
+https://github.com/ARM-software/CMSIS_6/commit/af1b110e46a1720349f6f125e386e126767699bd
+```
+
+能打开、能看到同一个文件，就说明本地这份是那棵树的拷贝。
+
+### 7.6 看许可证原文
+
+```bash
+head -5 stm32/hal/LICENSE.md            # BSD 3-Clause，ST 原文
+head -5 stm32/cmsis/device/LICENSE.md   # Apache License 2.0
+```
+
+两个许可证的组合本身就是特征：ST 的 HAL 用 BSD-3-Clause，CMSIS 用 Apache-2.0。
+第三方魔改版通常会把这两段删掉或换成 MIT。
+
+### 7.7 想更彻底：跟 st.com 的官方包对
+
+最权威的来源是 ST 官网的 `STM32CubeF4` 整包（`en.stm32cubef4-v1.28.x.zip`），
+里面 `Drivers/STM32F4xx_HAL_Driver/` 和 `Drivers/CMSIS/Device/ST/STM32F4xx/`
+与本目录应当是同一份源码（GitHub 仓库就是它的上游，`.gitmodules` 可证，见第 6 节）。
+整包约 1 GB，需要的话可以下下来逐文件 diff —— 但通常没必要，7.2~7.5 已经足够定性。

@@ -1,6 +1,5 @@
 #include "stm32f4xx_hal.h"
 #include <stdio.h>
-
 #include "board.h"
 #include "uart.h"
 #include "gpio.h"
