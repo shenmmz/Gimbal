@@ -10,6 +10,7 @@
       "executable": "${workspaceFolder}/build/arm/gimbal.elf",
       "openocdPath": "${env:USERPROFILE}/tools/openocd/bin/openocd.exe",
       "device": "STM32F405RG",
+      "svdFile": "${workspaceFolder}/external/调试/STM32F405.svd",
       "configFiles": [
         "interface/stlink.cfg",
         "target/stm32f4x.cfg"

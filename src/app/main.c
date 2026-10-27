@@ -1,6 +1,13 @@
 #include "stm32f4xx_hal.h"
 #include <stdio.h>
+
+#include "board.h"
 #include "uart.h"
+#include "gpio.h"
+#include "pwm.h"
+#include "adc.h"
+#include "timebase.h"
+#include "types.h"
 
 void Error_Handler(void);
 
@@ -39,11 +46,34 @@ static void clock_init(void)
     }
 }
 
+/* W1 自检：打印 7 路 ADC 原始值 + 每秒一行 */
+static void self_test_print(void)
+{
+    static uint32_t s_last = 0u;
+    uint32_t now = timebase_ms();
+
+    if ((now - s_last) < 1000u) {
+        return;
+    }
+    s_last = now;
+
+    uint16_t adc[ADC_CH_COUNT];
+    adc_get_raw(adc);
+
+    printf("[%5lu s] ADC: M1A=%4u M1B=%4u M2A=%4u M2B=%4u M3A=%4u M3B=%4u VBUS=%4u\r\n",
+           (unsigned long)(now / 1000u),
+           adc[0], adc[1], adc[2], adc[3], adc[4], adc[5], adc[6]);
+}
+
 int main(void)
 {
-    HAL_Init();         // 初始化 HAL 库
-    clock_init();       // 初始化时钟
-    uart_init();        // 初始化串口
+    HAL_Init();         /* HAL 库 + SysTick 1ms */
+    clock_init();       /* 168 MHz 时钟树 */
+    timebase_init();    /* DWT 微秒计数器 */
+    uart_init();        /* 调试串口 UART5 */
+    gpio_init();        /* nSLEEP + 加热 GPIO */
+    pwm_init();         /* 三轴 24 kHz PWM */
+    adc_init();         /* ADC1 扫描 + DMA */
 
     printf("\r\n=== Gimbal / IUO112 / STM32F405RGT6 ===\r\n");
     printf("SYSCLK %lu  HCLK %lu  PCLK1 %lu  PCLK2 %lu  (Hz)\r\n",
@@ -51,14 +81,18 @@ int main(void)
            (unsigned long)HAL_RCC_GetHCLKFreq(),
            (unsigned long)HAL_RCC_GetPCLK1Freq(),
            (unsigned long)HAL_RCC_GetPCLK2Freq());
+    printf("W1 板级自检模式：PWM=50%%, ADC 循环采样打印\r\n");
 
-    uint32_t last = 0u;
+    /* 上电顺序固定为 ① 先配 50% 占空比 → ② 再拉高 nSLEEP（架构 §10.6.1）。
+     * 反过来做，桥臂会在 CCR 还是复位值 0 时通电，三相全低，可能直通。 */
+    pwm_set_all_zero();
+    gpio_set_all_sleep(false);   /* false = 不睡眠 = nSLEEP 拉高 */
+    timebase_delay_us(1500u);    /* 等内部电荷泵建立 */
+
+    printf("nSLEEP 已拉高，PWM=50%%，开始 ADC 采样...\r\n\r\n");
+
     for (;;) {
-        uint32_t now = HAL_GetTick();
-        if ((now - last) >= 1000u) {
-            last = now;
-            printf("alive %lu s\r\n", (unsigned long)(now / 1000u));
-        }
+        self_test_print();
     }
 }
 

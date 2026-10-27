@@ -75,11 +75,16 @@ add_executable(gimbal
     ${VENDOR}/cmsis/device/startup/startup_stm32f405xx.s
     ${SRC}/app/main.c
     ${SRC}/driver/uart.c
+    ${SRC}/driver/gpio.c
+    ${SRC}/driver/pwm.c
+    ${SRC}/driver/adc.c
+    ${SRC}/driver/timebase.c
 )
 
 target_include_directories(gimbal PRIVATE
     ${SRC}/app
     ${SRC}/driver
+    ${SRC}/common
     ${SRC}/control
     ${SRC}/algorithm
 )

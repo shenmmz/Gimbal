@@ -165,7 +165,8 @@ Gimbal/
 │   │   ├── STM32F405RGT6_Datasheet.pdf
 │   │   ├── STM32F405_RM0090_ReferenceManual.pdf
 │   │   ├── STM32F4_PM0214_ProgrammingManual.pdf
-│   │   ├── ICM-42688-P_Datasheet.pdf
+│   │   ├── ICM-42688-P_Datasheet.pdf # Rev1.3，可检索
+│   │   ├── ICM-42688-P_Datasheet_v1.9_scan.pdf # Rev1.9，扫描件
 │   │   ├── MT9101ET_Datasheet.pdf
 │   │   ├── C5370899_..._SS6343M_..._中文规格书.PDF
 │   │   └── SY8303A_Buck_Datasheet.pdf
@@ -174,6 +175,8 @@ Gimbal/
 │   │   ├── BOD12-11-SCH.pdf  # 电机板原理图
 │   │   ├── R14AQ-SCH.pdf     # IMU 板原理图
 │   │   └── 云台整机渲染图.jpg
+│   ├── 调试/                 # 调试辅助文件
+│   │   └── STM32F405.svd     # 寄存器描述，调试时显示外设名
 │   └── README.md             # 硬件资料索引（唯一入库的文件）
 ├── docs/                     # 设计文档（仅本地维护，不入仓库）
 │   ├── FOC技术栈.md
@@ -323,6 +326,7 @@ CMake 交叉编译配置：
 
 - **使用手册/**：芯片数据手册（STM32F405、SS6343M、MT9101ET、ICM-42688-P 等）
 - **硬件引脚/**：三块板的原理图（IUO112、BOD12-11、R14AQ）+ 整机渲染图
+- **调试/**：`STM32F405.svd`，供 Cortex-Debug 显示外设寄存器名
 
 > 详细清单见 `external/README.md`。设计文档与硬件资料（`docs/`、`external/`）仅本地维护，不入 Git 仓库。
 

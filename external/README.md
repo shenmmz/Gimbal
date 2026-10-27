@@ -9,6 +9,7 @@
 |---|---|---|
 | `使用手册/` | 芯片数据手册、参考手册 | **写固件要翻的** |
 | `硬件引脚/` | 三块板原理图 + 整机渲染图 | **查引脚连接要翻的** |
+| `调试/` | `STM32F405.svd` 寄存器描述文件 | **调试时看外设名要的**（不进编译） |
 
 > 这里的文件不参与编译，不进构建产物，只作为查证依据。
 > 引用时请写清「文件名 + 章节/页码」，方便复核。
@@ -20,13 +21,34 @@
 
 | 文件 | 查什么 |
 |---|---|
-| `使用手册/STM32F405RGT6_Datasheet.pdf`（DS8626 Rev12，206 页） | **复用功能表**（哪个引脚能出 TIM3_CH4）、电气特性、封装、时钟树上限 |
+| `使用手册/STM32F405RGT6_Datasheet.pdf`（DS8626 Rev12，206 页） | **复用功能表**（哪个引脚能出 TIM3_CH4）、电气特性、封装、时钟树上限。**这是 F405xx/407xx 系列合集，不是单型号手册**：LQFP64 引脚图 p.43，引脚定义总表 Table 7 从 p.49 起，订货号解码 p.186 |
 | `使用手册/STM32F405_RM0090_ReferenceManual.pdf`（Rev22，1741 页） | **寄存器级权威**：TIM1/3/4 高级定时器与死区、ADC 注入/规则组、SPI2、USART2/5、DMA、RCC、IWDG、Flash 编程 |
-| `使用手册/ICM-42688-P_Datasheet.pdf`（DS-000347，109 页） | 寄存器映射、SPI **只支持模式 3**（CPOL=1/CPHA=1）、WHO_AM_I = `0x47`、量程与零偏、启动时间 |
+| `使用手册/ICM-42688-P_Datasheet.pdf`（DS-000347 Rev 1.3，109 页，**文字层可检索**） | 寄存器映射（§14）、SPI 时序（§9.6 + Figure 2，SCLK 空闲高即模式 3）、WHO_AM_I = `0x47`、量程与零偏、启动时间 |
+| `使用手册/ICM-42688-P_Datasheet_v1.9_scan.pdf`（Rev 1.9，109 页，**扫描件无文字层**） | 官网最新版，只能看不能搜。核对规格是否有更新时翻它；**引用页码请用上面那份 v1.3** |
 | `使用手册/MT9101ET_Datasheet.pdf` | **唯一的电角度来源**。这是 MT910X **系列**手册（已核对首页，内容为 Ratiometric Linear Hall IC），MT9101ET 是系列成员，不必另找单型号版。要点：无 A/B/Z 数字输出，只能 ADC 采样，没有霍尔中断可用 |
 | `使用手册/C5370899_..._SS6343M_..._中文规格书.PDF`（≈10 页） | 单 PWM 每相真值表、内部互补 + 40 ns 死区、nSLEEP 建立时间、V3P3 LDO 电流、过流/过温保护行为。文件名是供应商原始命名，未改名以免与采购记录对不上 |
 
 **查证顺序**：先 `RM0090` 定寄存器，再回数据手册确认这个引脚/封装上确实有这个功能。
+
+### 1.1 型号核对：STM32F405RGT6
+
+数据手册是**系列合集**（DS8626 同时覆盖 STM32F405xx / STM32F407xx 共 12 个订货号），
+所以必须按订货号确认，不能只看封面。RGT6 逐位解码见手册 p.186「8 Ordering information」：
+
+| 段 | 值 | 含义 |
+|---|---|---|
+| `STM32` | — | Arm 32-bit MCU |
+| `F` | — | 通用型 |
+| `405` | — | STM32F40xxx + connectivity（**无**摄像头接口、**无**以太网，那是 407） |
+| `R` | 64 pins | **LQFP64** ← 本项目封装，引脚图 p.43 |
+| `G` | 1024 KB | Flash 1 MB |
+| `T` | LQFP | 封装类型 |
+| `6` | −40~85 °C | 工业级温度范围 |
+
+> 对固件的三个直接结论：
+> ① LQFP64 封装下 TIM4 的三路正好是 PB8/PB7/PB6，TIM3 是 PC9/PC8/PC7（见 `docs/IUO112_引脚配置清单.md`）；
+> ② `G` = 1 MB Flash，但末页 sector 11 留作参数区，固件可用 896 KB；
+> ③ 编译宏只能是 `STM32F405xx`，不能换成 `STM32F407xx`——外设基址虽然相同，但 407 多出的 ETH/DCMI 会改变头文件里的结构体定义。
 
 ## 2. 备查：留着但基本不翻（2 份）
 
@@ -58,17 +80,23 @@
 
 | 缺什么 | 影响 | 备注 |
 |---|---|---|
-| `STM32F405.svd` | 调试时看不到外设寄存器名，只能看地址 | 可从 STM32CubeF4 仓库取，放到 `硬件引脚/` 或新建 `调试/` 后在 `launch.json` 配 `svdFile` |
 | SS6343M 英文原版手册 | 中文版个别参数表译名不一致 | 现用中文版够用 |
 | ICM-42688-P Register Map 单行本 | 寄存器表在数据手册 §9 内，够用 | 若嫌翻页慢可另下 `rm-000048` |
 
-## 6. 下载记录
+## 6. 下载记录与完整性校验
 
-| 日期 | 文件 | 来源 |
-|---|---|---|
-| 2026-10-27 | `STM32F405RGT6_Datasheet.pdf` | st.com `resource/en/datasheet/stm32f405rg.pdf` |
-| 2026-10-27 | `STM32F405_RM0090_ReferenceManual.pdf` | st.com `resource/en/reference_manual/rm0090-...pdf` |
-| 2026-10-27 | `STM32F4_PM0214_ProgrammingManual.pdf` | st.com `resource/en/programming_manual/pm0214-...pdf` |
-| 2026-10-27 | `ICM-42688-P_Datasheet.pdf` | InvenSense DS-000347（Octopart 镜像） |
-| 2026-10-27 | `SY8303A_Buck_Datasheet.pdf` | Silergy（Promelec 镜像） |
-| 本地既有 | `MT9101ET_Datasheet.pdf`、`SS6343M 中文规格书`、三份原理图、整机渲染图 | 非本轮下载 |
+2026-10-27 用 pypdf 逐份打开验证：能解析、页数与官方一致、首页版本号对得上，不是截断的残片。
+
+| 日期 | 文件 | 页数 | 来源 |
+|---|---|---|---|
+| 2026-10-27 | `STM32F405RGT6_Datasheet.pdf` | 206 ✓ | st.com `resource/en/datasheet/stm32f405rg.pdf`（DS8626 Rev 12，2026-03） |
+| 2026-10-27 | `STM32F405_RM0090_ReferenceManual.pdf` | 1741 ✓ | st.com `resource/en/reference_manual/rm0090-...pdf`（Rev 22，2026-05） |
+| 2026-10-27 | `STM32F4_PM0214_ProgrammingManual.pdf` | 262 ✓ | st.com `resource/en/programming_manual/pm0214-...pdf`（Rev 10，2020-03） |
+| 2026-10-27 | `ICM-42688-P_Datasheet.pdf`（Rev 1.3，文字层 108/110 页 ✓） | 110 | mouser.cn `datasheet/2/400/DS_000347_ICM_42688_P_v1_3-2325790.pdf` |
+| 2026-10-27 | `ICM-42688-P_Datasheet_v1.9_scan.pdf`（Rev 1.9，扫描件） | 109 | Octopart 镜像；无文字层，仅作最新版核对 |
+| 2026-10-27 | `SY8303A_Buck_Datasheet.pdf` | 6 ✓ | Silergy（Promelec 镜像） |
+| 2026-10-27 | `调试/STM32F405.svd` | 91 个外设 ✓ | `cmsis-svd-data` 仓库 `data/STMicro/STM32F405.svd`，`<device><name>` 为 `STM32F405`，XML 可解析 |
+| 本地既有 | `MT9101ET_Datasheet.pdf`（MT910X 系列 Rev 2.1）、`SS6343M 中文规格书`（10 页）、三份原理图、整机渲染图 | — | 非本轮下载 |
+
+> `svdFile` 已写进 `.vscode/launch.json`，调试时变量窗口能看到 `TIM1->CCR1` 这种名字而不是 `0x40010034`。
+> `external/` 不入 Git，换机器后要按本表重新放文件；缺 SVD 时 Cortex-Debug 只会告警，不影响调试。
