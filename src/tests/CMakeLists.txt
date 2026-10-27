@@ -1,4 +1,4 @@
-# PC 端单元测试（架构文档 §14.4：algorithm/ 与 control/ 不得依赖 HAL）
+# PC 端单元测试（架构文档 §14 第 4 条：algorithm/ 与 control/ 不得依赖 HAL）
 # 只把这两个目录加入头文件搜索路径，任何一处 #include "stm32f4xx_hal.h" 都会在这里暴露
 
 add_executable(test_smoke test_smoke.c)

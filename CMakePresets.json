@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "cmakeMinimumRequired": { "major": 3, "minor": 20, "patch": 0 },
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
   "configurePresets": [
     {
       "name": "arm",
@@ -9,7 +9,8 @@
       "binaryDir": "${sourceDir}/build/arm",
       "toolchainFile": "${sourceDir}/cmake/toolchain-arm-none-eabi.cmake",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
@@ -23,11 +24,12 @@
     },
     {
       "name": "host",
-      "displayName": "PC 端单元测试",
+      "displayName": "PC 端单元测试（先运行 scripts\\env.cmd）",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/host",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     }
   ],

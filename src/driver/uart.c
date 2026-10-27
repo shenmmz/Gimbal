@@ -72,7 +72,7 @@ int _write(int file, char *ptr, int len)
 }
 
 /* newlib 内部偶尔需要一小块堆（格式化缓冲）。
- * 应用层仍然禁止 malloc/free（架构文档 §14.6），这里只是防止库函数失败。 */
+ * 应用层仍然禁止 malloc/free（架构文档 §14 第 6 条），这里只是防止库函数失败。 */
 static uint8_t libc_heap[1024];
 static size_t  libc_heap_used;
 

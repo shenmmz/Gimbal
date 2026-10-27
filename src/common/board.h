@@ -3,7 +3,7 @@
  *
  * 使用限制：
  *   - 只有 driver/ 与 app/ 可以包含本文件；
- *   - algorithm/ 与 control/ 不得包含（§14.4，保证可移植可测试）；
+ *   - algorithm/ 与 control/ 不得包含（架构 §14 第 4 条，保证可移植可测试）；
  *   - 本文件用到 HAL 的 GPIO_PIN_x 宏，必须在 stm32f4xx_hal.h 之后包含。
  *
  * 引脚依据：docs/IUO112_引脚配置清单.md、docs/硬件设计总结.md
