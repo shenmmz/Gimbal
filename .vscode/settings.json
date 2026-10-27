@@ -6,5 +6,7 @@
     "*.h": "c",
     "*.ld": "ld"
   },
-  "C_Cpp.default.cStandard": "c11"
+  "C_Cpp.default.cStandard": "c11",
+  "git.openRepositoryInParentFolders": "always",
+  "git.autofetch": true
 }
