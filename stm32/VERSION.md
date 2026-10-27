@@ -69,9 +69,11 @@ cmake --build build/arm && ./build/host/src/tests/test_smoke.exe
 
 1. **行尾**：上游是 CRLF，本仓库 `.gitattributes` 归一化成 LF。直接 `diff -q` 会**所有文件都报差异**，
    必须加 `--strip-trailing-cr`，否则会误判成"全都改过"。
+   （2026-10-27 已把 `stm32/` 下 42 个 CRLF 文件统一转成 LF，工作区与仓库一致；
+   下次从上游拷文件回来仍是 CRLF，记得再转一次。）
 2. **不要用 tag 覆盖 master**，理由见第 1 节。
 3. **CMSIS 6.4.0 删了两个文件**：`m-profile/cmsis_tiarmclang_m.h`、`a-profile/cmsis_cp15.h`（本地已同步删除）。
-   本地若还留着不会报错，但别再从别处拷回来（`cmsis_compiler.h` 已经不再引用它们）。
+   别再拷回来——`cmsis_compiler.h` 已不再引用它们，留着只会让人以为版本没对齐。
 
 ## 5. 升级后必须验证的三件事
 
